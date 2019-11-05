@@ -2,7 +2,8 @@
 using UnityEngine.XR;
 using UnityEngine.XR.ARFoundation;
 
-public sealed class SeeThroughController : MonoBehaviour {
+public sealed class SeeThroughController : MonoBehaviour
+{
     #region Editor public fields
 
     [SerializeField]
@@ -23,17 +24,21 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     #region Public properties
 
-    public Material BackgroundMaterial {
+    ARCameraManager cameraManager;
+
+    public Material BackgroundMaterial
+    {
         get { return backgroundMaterial; }
-        set {
+        set
+        {
             backgroundMaterial = value;
 
-            seeThroughRenderer.Mode = ARRenderMode.MaterialAsBackground;
+            seeThroughRenderer.Mode = UnityEngine.XR.ARRenderMode.MaterialAsBackground;
             seeThroughRenderer.BackgroundMaterial = backgroundMaterial;
 
-            if (ARSubsystemManager.cameraSubsystem != null) {
-                ARSubsystemManager.cameraSubsystem.Material = backgroundMaterial;
-            }
+            //if (ARSubsystemManager.cameraSubsystem != null) {
+            //    ARSubsystemManager.cameraSubsystem.Material = backgroundMaterial;
+            //}
         }
     }
 
@@ -51,7 +56,8 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     #region Unity methods
 
-    void Start() {
+    void Start()
+    {
 #if UNITY_EDITOR
         webCamTexture = new WebCamTexture();
         webCamTexture.Play();
@@ -63,16 +69,18 @@ public sealed class SeeThroughController : MonoBehaviour {
         seeThroughRenderer = new SeeThroughRenderer(seeThroughCamera, backgroundMaterial);
 #endif
 
-        var cameraSubsystem = ARSubsystemManager.cameraSubsystem;
-        if (cameraSubsystem != null) {
-            cameraSubsystem.Camera = seeThroughCamera;
-            cameraSubsystem.Material = BackgroundMaterial;
-        }
+        //var cameraSubsystem = ARSubsystemManager.cameraSubsystem;
+        //if (cameraSubsystem != null) {
+        //    cameraSubsystem.Camera = seeThroughCamera;
+        //    cameraSubsystem.Material = BackgroundMaterial;
+        //}
 
-        ARSubsystemManager.cameraFrameReceived += OnCameraFrameReceived;
+        cameraManager.frameReceived += OnCameraFrameReceived;
+        //ARSubsystemManager.cameraFrameReceived += OnCameraFrameReceived;
     }
 
-    void OnGUI() {
+    void OnGUI()
+    {
         const int labelHeight = 60;
         const int sliderWidth = 200;
         const int buttonSize = 80;
@@ -85,7 +93,8 @@ public sealed class SeeThroughController : MonoBehaviour {
         GUI.Label(new Rect(boundary, boundary, 400, labelHeight),
                   $"AR FOV: {renderingCamera.fieldOfView:F3}");
 
-        if (GUI.Button(new Rect(boundary, boundary + labelHeight, buttonSize, buttonSize), "-")) {
+        if (GUI.Button(new Rect(boundary, boundary + labelHeight, buttonSize, buttonSize), "-"))
+        {
             renderingCamera.fieldOfView -= arFovIncrement;
         }
 
@@ -95,7 +104,8 @@ public sealed class SeeThroughController : MonoBehaviour {
 
         if (GUI.Button(
             new Rect(boundary + buttonSize + sliderWidth, boundary + labelHeight, buttonSize,
-                     buttonSize), "+")) {
+                     buttonSize), "+"))
+        {
             renderingCamera.fieldOfView += arFovIncrement;
         }
     }
@@ -104,15 +114,18 @@ public sealed class SeeThroughController : MonoBehaviour {
 
     #region Camera handling
 
-    void SetupCameraIfNecessary() {
-        seeThroughRenderer.Mode = ARRenderMode.MaterialAsBackground;
+    void SetupCameraIfNecessary()
+    {
+        seeThroughRenderer.Mode = UnityEngine.XR.ARRenderMode.MaterialAsBackground;
 
-        if (seeThroughRenderer.BackgroundMaterial != BackgroundMaterial) {
+        if (seeThroughRenderer.BackgroundMaterial != BackgroundMaterial)
+        {
             BackgroundMaterial = BackgroundMaterial;
         }
     }
 
-    void OnCameraFrameReceived(ARCameraFrameEventArgs eventArgs) {
+    void OnCameraFrameReceived(ARCameraFrameEventArgs eventArgs)
+    {
         SetupCameraIfNecessary();
     }
 
